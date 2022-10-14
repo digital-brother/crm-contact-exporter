@@ -12,6 +12,8 @@ for item in hubspot_list:
     contacts['email'] = item.properties['email']
     contacts['firstname'] = item.properties['firstname']
     contacts['lastname'] = item.properties['lastname']
+    print(contacts)
+print(contacts, 'contacts22')
 
 # for contact in data:
 #     contacts = contact.to_dict()

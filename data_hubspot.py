@@ -13,7 +13,6 @@ for item in hubspot_list:
     contacts['firstname'] = item.properties['firstname']
     contacts['lastname'] = item.properties['lastname']
 
-print(contacts)
 # for contact in data:
 #     contacts = contact.to_dict()
 #     x = pd.DataFrame([contacts['properties']]).drop(columns=['hs_object_id', 'createdate', 'lastmodifieddate'],

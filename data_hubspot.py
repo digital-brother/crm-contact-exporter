@@ -12,13 +12,3 @@ for item in hubspot_list:
     contacts['email'] = item.properties['email']
     contacts['firstname'] = item.properties['firstname']
     contacts['lastname'] = item.properties['lastname']
-
-# for contact in data:
-#     contacts = contact.to_dict()
-#     x = pd.DataFrame([contacts['properties']]).drop(columns=['hs_object_id', 'createdate', 'lastmodifieddate'],
-#                                                     axis=3)
-#     c.append(x)
-# with open('some.csv', 'w', newline='') as f:
-#     writer = csv.writer(f)
-#     for c in contacts:
-#         print(c)

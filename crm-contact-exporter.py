@@ -9,19 +9,33 @@ import os
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
-
+env = os.environ
 
 today = date.today()
+
+client_id = env.get("ZOHO_CLIENT_ID")
+client_secret = env.get("ZOHO_CLIENT_SECRET")
+redirect_uri = env.get("ZOHO_REDIRECT_URI")
+code = env.get("ZOHO_CODE")
+zoho_access_token_url = env.get("ZOHO_ACCESS_TOKEN_URL")
+zoho_contacts_url = env.get("ZOHO_CONTACTS_URL")
+
+hubspot_access_token = env.get("HUBSPOT_ACCESS_TOKEN")
+
+username = env.get("SALESFORCE_USERNAME")
+password = env.get("SALESFORCE_PASSWORD")
+security_token = env.get("SALESFORCE_SECURITY_TOKEN")
+instance_url = env.get("SALESFORCE_INSTANCE_URL")
 
 
 def get_zoho_access_token():
     payload = {'grant_type': 'authorization_code',
-               'client_id': os.environ.get("ZOHO_CLIENT_ID"),
-               'client_secret': os.environ.get("ZOHO_CLIENT_SECRET"),
-               'redirect_uri': os.environ.get("ZOHO_REDIRECT_URI"),
-               'code': os.environ.get("ZOHO_CODE")}
+               'client_id': client_id,
+               'client_secret': client_secret,
+               'redirect_uri': redirect_uri,
+               'code': code}
 
-    response = requests.request("POST", os.environ.get("ZOHO_ACCESS_TOKEN_URL"), headers={}, data=payload, files=[])
+    response = requests.request("POST", zoho_access_token_url, headers={}, data=payload, files=[])
 
     data = response.json()
 
@@ -37,7 +51,7 @@ def get_contacts_from_zoho():
         'Authorization': f'Zoho-oauthtoken {access_token}'
     }
 
-    response = requests.request("GET", os.environ.get("ZOHO_CONTACTS_URL"), headers=headers, data={}, files=[])
+    response = requests.request("GET", zoho_contacts_url, headers=headers, data={}, files=[])
 
     zoho_list = response.json()
 
@@ -59,7 +73,7 @@ def get_contacts_from_zoho():
 
 def get_contacts_from_hubspot():
     api_client = HubSpot(
-        access_token=os.environ.get("HUBSPOT_ACCESS_TOKEN"))
+        access_token=hubspot_access_token)
 
     hubspot_list = api_client.crm.contacts.get_all()
 
@@ -77,12 +91,12 @@ def get_contacts_from_hubspot():
 
 
 def get_contacts_from_salesforce():
-    sf = Salesforce(username=os.environ.get("SALESFORCE_USERNAME"),
-                    password=os.environ.get("SALESFORCE_PASSWORD"),
-                    security_token=os.environ.get("SALESFORCE_SECURITY_TOKEN"),
-                    instance_url=os.environ.get("SALESFORCE_INSTANCE_URL"))
+    salesforce_credentials = Salesforce(username=username,
+                                        password=password,
+                                        security_token=security_token,
+                                        instance_url=instance_url)
 
-    contacts_data = sf.query_all("SELECT Department, Name, Email, Phone, Title FROM Contact")
+    contacts_data = salesforce_credentials.query_all("SELECT Department, Name, Email, Phone, Title FROM Contact")
 
     salesforce_contacts_df = pd.DataFrame(contacts_data['records']).drop(columns='attributes')
     salesforce_contacts_df.to_csv(f"reports/salesforce_contacts-{today}.csv", index=False)
